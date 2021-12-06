@@ -1,4 +1,4 @@
-package easy;
+package other.easy;
 
 /**
  * @Author Lunus
