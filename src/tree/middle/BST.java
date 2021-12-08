@@ -1,5 +1,6 @@
 package tree.middle;
 
+import tree.TreeNode;
 import java.util.LinkedList;
 
 /**
@@ -65,11 +66,3 @@ class BSTIterator {
 }
 
 
-class TreeNode {
-    int val;
-    TreeNode left;
-    TreeNode right;
-    TreeNode(int val) {
-        this.val = val;
-    }
-}
