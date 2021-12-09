@@ -15,6 +15,27 @@ import java.util.Set;
  */
 public class Solution {
 
+    public static void main(String[] args) {
+        TreeNode root1 = new TreeNode(1);
+        TreeNode node1 = new TreeNode(3);
+        TreeNode node2 = new TreeNode(2);
+        TreeNode node3 = new TreeNode(5);
+        root1.left = node1;
+        root1.right = node2;
+        node1.left = node3;
+
+        TreeNode root2 = new TreeNode(2);
+        TreeNode node4 = new TreeNode(1);
+        TreeNode node5 = new TreeNode(3);
+        TreeNode node6 = new TreeNode(4);
+        TreeNode node7 = new TreeNode(7);
+        root2.left = node4;
+        root2.right = node5;
+        node4.right = node6;
+        node5.right = node7;
+        new Solution().mergeTrees(root1, root2);
+    }
+
     /*
      * @Author lupeiyao
      * @Description 求二叉树val的集合大小
@@ -227,5 +248,152 @@ public class Solution {
             root.right = sortedArrayToBST(nums, middle + 1, high);
             return root;
         }
+    }
+
+    /*
+     * @Author lupeiyao
+     * @Description 把二叉搜索树的每个节点替换成所有大于等于该节点值得和
+     * @Link https://leetcode-cn.com/problems/w6cpku/
+     * @Solution 逆中序遍历即可
+     * @Data 2021/12/9 21:19
+     */
+    public TreeNode convertBST(TreeNode root) {
+        int sum = 0;
+        LinkedList<TreeNode> list = new LinkedList<>();
+        TreeNode node = root;
+        while(node != null || !list.isEmpty()) {
+            while(node != null) {
+                list.add(node);
+                node = node.right;
+            }
+            node = list.pollLast();
+            sum += node.val;
+            node.val = sum;
+            node = node.left;
+        }
+        return root;
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 合并两颗二叉树
+     * @Link https://leetcode-cn.com/problems/merge-two-binary-trees/
+     * @Solution 层序遍历，如果两个左节点都非空，则左节点加入队列，否则结果等于非空的那个节点，右一样
+     * @Data 2021/12/9 23:05
+     */
+    public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+        if(root1 == null) {
+            return root2;
+        }
+        if(root2 == null) {
+            return root1;
+        }
+        LinkedList<TreeNode> list = new LinkedList<>();
+        LinkedList<TreeNode> list1 = new LinkedList<>();
+        LinkedList<TreeNode> list2 = new LinkedList<>();
+        TreeNode result = new TreeNode(root1.val + root2.val);
+        list.add(result);
+        list1.add(root1);
+        list2.add(root2);
+        while(!list1.isEmpty() && !list2.isEmpty()) {
+            TreeNode node = list.pollFirst();
+            TreeNode node1 = list1.pollFirst();
+            TreeNode node2 = list2.pollFirst();
+            if(node1.left != null && node2.left != null) {
+                node.left = new TreeNode(node1.left.val + node2.left.val);
+                list.add(node.left);
+                list1.add(node1.left);
+                list2.add(node2.left);
+            } else if(node1.left == null) {
+                node.left = node2.left;
+            } else {
+                node.left = node1.left;
+            }
+
+            if(node1.right != null && node2.right != null) {
+                node.right = new TreeNode(node1.right.val + node2.right.val);
+                list.add(node.right);
+                list1.add(node1.right);
+                list2.add(node2.right);
+            } else if(node1.right == null) {
+                node.right = node2.right;
+            } else {
+                node.right = node1.right;
+            }
+        }
+        return result;
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 找到BST的某个值节点
+     * @Link https://leetcode-cn.com/problems/search-in-a-binary-search-tree/
+     * @Solution 正常检索即可
+     * @Data 2021/12/9 23:07
+     */
+    public TreeNode searchBST(TreeNode root, int val) {
+        TreeNode cur = root;
+        while(cur != null) {
+            if(val == cur.val) {
+                return cur;
+            } else if(val > cur.val) {
+                cur = cur.right;
+            } else {
+                cur = cur.left;
+            }
+        }
+        return cur;
+    }
+
+    /*
+     * @Author lupeiyao
+     * @Description 找BST第K大的节点
+     * @Link https://leetcode-cn.com/problems/er-cha-sou-suo-shu-de-di-kda-jie-dian-lcof/
+     * @Solution 逆中序遍历即可
+     * @Data 2021/12/9 23:08
+     */
+    public int kthLargest(TreeNode root, int k) {
+        LinkedList<TreeNode> list = new LinkedList<>();
+        TreeNode cur = root;
+        int cnt = 0;
+        while(cur != null || !list.isEmpty()) {
+            while(cur != null) {
+                list.add(cur);
+                cur = cur.right;
+            }
+            cur = list.pollLast();
+            cnt += 1;
+            if(cnt == k) {
+                return cur.val;
+            }
+            cur = cur.left;
+        }
+        return -1;
+    }
+
+    /*
+     * @Author lupeiyao
+     * @Description 中序遍历BT
+     * @Link https://leetcode-cn.com/problems/binary-tree-inorder-traversal/
+     * @Solution 中序遍历
+     * @Data 2021/12/9 23:09
+     */
+    public List<Integer> inorderTraversal(TreeNode root) {
+        List<Integer> result = new LinkedList<>();
+        LinkedList<TreeNode> list = new LinkedList<>();
+        TreeNode cur = root;
+        int cnt = 0;
+        while(cur != null || !list.isEmpty()) {
+            while(cur != null) {
+                list.add(cur);
+                cur = cur.left;
+            }
+            cur = list.pollLast();
+            result.add(cur.val);
+            cur = cur.right;
+        }
+        return  result;
     }
 }
