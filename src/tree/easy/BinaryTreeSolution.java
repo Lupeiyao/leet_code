@@ -10,7 +10,7 @@ import java.util.*;
  * @Date 2021/12/8 19:34
  * @Version 1.0
  */
-public class Solution {
+public class BinaryTreeSolution {
 
     public static void main(String[] args) {
         TreeNode root1 = new TreeNode(1, 0 ,1);
@@ -23,7 +23,7 @@ public class Solution {
         root1.right.left = node3;
         root1.right.right = node4;
 
-        System.out.println(new Solution().sumRootToLeaf(root1));
+        System.out.println(new BinaryTreeSolution().sumRootToLeaf(root1));
     }
 
     /*
