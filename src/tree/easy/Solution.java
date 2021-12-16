@@ -2,10 +2,7 @@ package tree.easy;
 
 import tree.TreeNode;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @Author lupeiyao
@@ -16,24 +13,17 @@ import java.util.Set;
 public class Solution {
 
     public static void main(String[] args) {
-        TreeNode root1 = new TreeNode(1);
-        TreeNode node1 = new TreeNode(3);
-        TreeNode node2 = new TreeNode(2);
-        TreeNode node3 = new TreeNode(5);
-        root1.left = node1;
-        root1.right = node2;
-        node1.left = node3;
-
-        TreeNode root2 = new TreeNode(2);
+        TreeNode root1 = new TreeNode(1, 0 ,1);
+        TreeNode node1 = new TreeNode(0);
+        TreeNode node2 = new TreeNode(1);
+        TreeNode node3 = new TreeNode(0);
         TreeNode node4 = new TreeNode(1);
-        TreeNode node5 = new TreeNode(3);
-        TreeNode node6 = new TreeNode(4);
-        TreeNode node7 = new TreeNode(7);
-        root2.left = node4;
-        root2.right = node5;
-        node4.right = node6;
-        node5.right = node7;
-        new Solution().mergeTrees(root1, root2);
+        root1.left.left = node1;
+        root1.left.right = node2;
+        root1.right.left = node3;
+        root1.right.right = node4;
+
+        System.out.println(new Solution().sumRootToLeaf(root1));
     }
 
     /*
@@ -395,5 +385,323 @@ public class Solution {
             cur = cur.right;
         }
         return  result;
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description BST中查找是否有两个节点满足a.val + b.val = k
+     * @Link https://leetcode-cn.com/problems/opLdQZ/
+     * @Solution 双指针，分别从小到大和从大到小移动
+     * @Data 2021/12/16 22:19
+     */
+    public boolean findTarget(TreeNode root, int k) {
+        if(root == null) {
+            return false;
+        }
+        BSTIterator iterator = new BSTIterator(root);
+        TreeNode left = iterator.getLeftNextNode();
+        TreeNode right = iterator.getRightNextNode();
+        while(left != null && right != null && right != left) {
+            if(left.val + right.val == k) {
+                return true;
+            } else if(left.val + right.val > k) {
+                right = iterator.hasRightNext() ? iterator.getRightNextNode() : null;
+            } else {
+                left = iterator.hasLeftNext() ? iterator.getLeftNextNode() : null;
+            }
+        }
+        return false;
+    }
+
+    private class BSTIterator {
+        LinkedList<TreeNode> lList = new LinkedList<>();
+        LinkedList<TreeNode> rList = new LinkedList<>();
+        TreeNode leftCur;
+        TreeNode rightCur;
+
+        BSTIterator(TreeNode root) {
+            leftCur = root;
+            rightCur = root;
+        }
+
+        boolean hasLeftNext() {
+            return leftCur != null || !lList.isEmpty();
+        }
+
+        boolean hasRightNext() {
+            return rightCur != null || !rList.isEmpty();
+        }
+
+        TreeNode getLeftNextNode() {
+            while(leftCur != null) {
+                lList.add(leftCur);
+                leftCur = leftCur.left;
+            }
+            TreeNode result = lList.pollLast();
+            leftCur = result.right;
+            return result;
+        }
+
+        TreeNode getRightNextNode() {
+            while(rightCur != null) {
+                rList.add(rightCur);
+                rightCur = rightCur.right;
+            }
+            TreeNode result = rList.pollLast();
+            rightCur = result.left;
+            return result;
+        }
+
+    }
+
+    /*
+     * @Author lupeiyao
+     * @Description 找两个节点的最近公共祖先
+     * @Link https://leetcode-cn.com/problems/er-cha-shu-de-zui-jin-gong-gong-zu-xian-lcof/
+     * @Solution 遍历，在map中存储每个节点的父节点，然后回溯p，set存储所有父节点，然后回溯q
+     * @Data 2021/12/16 22:13
+     */
+    public TreeNode lowestCommonAncestor(TreeNode root, TreeNode p, TreeNode q) {
+        HashMap<TreeNode, TreeNode> fatherMap = new HashMap<>();
+        if(root == null || p == null || q == null) {
+            return root;
+        }
+        if(p == q) {
+            return p;
+        }
+        TreeNode cur = root;
+        LinkedList<TreeNode> list = new LinkedList<>();
+        while(cur != null || !list.isEmpty()) {
+            while(cur != null) {
+                list.add(cur);
+                if(cur.left != null) {
+                    fatherMap.put(cur.left, cur);
+                }
+                if(cur.right != null) {
+                    fatherMap.put(cur.right, cur);
+                }
+                cur = cur.left;
+            }
+            cur = list.pollLast();
+            cur = cur.right;
+        }
+
+        HashSet<TreeNode> pFathers = new HashSet<>();
+        while(p != null) {
+            pFathers.add(p);
+            p = fatherMap.get(p);
+        }
+        while(q != null) {
+            if(pFathers.contains(q)) {
+                return q;
+            }
+            q = fatherMap.get(q);
+        }
+        return null;
+
+    }
+
+    /*
+     * @Author lupeiyao
+     * @Description 判断一棵二叉树是否是另一颗二叉树的子树
+     * @Link https://leetcode-cn.com/tag/tree/problemset/
+     * @Solution 前序遍历，如果cur.val = subRoot.val，判断same(cur, subRoot)(递归)
+     * @Data 2021/12/16 22:10
+     */
+    public boolean isSubtree(TreeNode root, TreeNode subRoot) {
+        if(root == subRoot) {
+            return true;
+        }
+        if(root == null || subRoot == null) {
+            return false;
+        }
+        TreeNode cur = root;
+        LinkedList<TreeNode> list = new LinkedList<>();
+        while(cur != null || !list.isEmpty()) {
+            while(cur != null) {
+                if(cur.val == subRoot.val && isSameTree(cur, subRoot)) {
+                    return true;
+                }
+                list.add(cur);
+                cur = cur.left;
+            }
+            cur = list.pollLast();
+            cur = cur.right;
+        }
+        return false;
+    }
+
+    private boolean isSameTree(TreeNode root1, TreeNode root2) {
+        if(root1 == root2) {
+            return true;
+        } else if(root1 == null && root2 != null) {
+            return false;
+        } else if(root1 != null && root2 == null) {
+            return false;
+        } else if(root1.val != root2.val) {
+            return false;
+        } else {
+            return isSameTree(root1.left, root2.left) && isSameTree(root1.right, root2.right);
+        }
+    }
+
+    /*
+     * @Author lupeiyao
+     * @Description 二叉树每个节点 node.val = min(node.left.val, node.right.val)
+     * @Link https://leetcode-cn.com/problems/second-minimum-node-in-a-binary-tree/
+     * @Solution 层序遍历，找到大于root.val的最小val，剪枝，如果本层全都是大于root.val的，则不需要继续了
+     * @Data 2021/12/16 22:08
+     */
+    public int findSecondMinimumValue(TreeNode root) {
+        if(root == null || root.left == null) {
+            return -1;
+        }
+        LinkedList<TreeNode> list = new LinkedList<>();
+        // 每层加个null作为标志位
+        list.add(root);
+        list.add(null);
+        int min = root.val;
+        int secondMin = -1;
+        long levelMin = min + 1;
+        while(!list.isEmpty()) {
+            TreeNode cur = list.pollFirst();
+            if(cur == null) {
+                if(!list.isEmpty()) {
+                    list.add(null);
+                }
+                if(levelMin == min) {
+                    levelMin = min + 1;
+                    continue;
+                } else {
+                    break;
+                }
+            }
+            if(cur.val > min) {
+                if(secondMin == -1) {
+                    secondMin = cur.val;
+                } else {
+                    secondMin = Math.min(secondMin, cur.val);
+                }
+            }
+            if(levelMin == min + 1) {
+                levelMin = cur.val;
+            } else {
+                levelMin = Math.min(levelMin, cur.val);
+            }
+            if(cur.left != null) {
+                list.add(cur.left);
+            }
+            if(cur.right != null) {
+                list.add(cur.right);
+            }
+        }
+        return secondMin;
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 二叉树最小深度
+     * @Link https://leetcode-cn.com/problems/minimum-depth-of-binary-tree/
+     * @Solution 层序遍历，找到第一个叶子节点
+     * @Data 2021/12/16 22:07
+     */
+    public int minDepth(TreeNode root) {
+        if(root == null) {
+            return 0;
+        }
+        LinkedList<TreeNode> list = new LinkedList<>();
+        list.add(root);
+        list.add(null);
+        int result = 1;
+        while(!list.isEmpty()) {
+            TreeNode node = list.pollFirst();
+            if(node == null) {
+                result++;
+                list.add(null);
+                continue;
+            }
+            if(node.left == null && node.right == null) {
+                return result;
+            }
+            if(node.left != null) {
+                list.add(node.left);
+            }
+            if(node.right != null) {
+                list.add(node.right);
+            }
+        }
+        return result;
+    }
+
+    /*
+     * @Author lupeiyao
+     * @Description 二叉树后序遍历
+     * @Link https://leetcode-cn.com/problems/binary-tree-postorder-traversal/
+     * @Solution 后续遍历
+     * @Data 2021/12/16 22:06
+     */
+    public List<Integer> postorderTraversal(TreeNode root) {
+        List<Integer> result = new LinkedList<>();
+        LinkedList<TreeNode> stack = new LinkedList<>();
+        TreeNode cur = root;
+        TreeNode pre = null;
+        while(cur != null || !stack.isEmpty()) {
+            while(cur != null) {
+                stack.add(cur);
+                cur = cur.left;
+            }
+            cur = stack.pollLast();
+            if(cur.right == null || cur.right == pre) {
+                result.add(cur.val);
+                pre = cur;
+                cur = null;
+            } else {
+                stack.add(cur);
+                cur = cur.right;
+            }
+        }
+        return result;
+    }
+
+    /*
+     * @Author lupeiyao
+     * @Description 二叉树，节点值为0或1，求所有叶子节点代表的二进制串数字之和
+     * @Link https://leetcode-cn.com/problems/sum-of-root-to-leaf-binary-numbers/
+     * @Solution 层序遍历，辅助队列用来存储当前节点代表的二进制串数字之和
+     * @Data 2021/12/16 22:03
+     */
+    public int sumRootToLeaf(TreeNode root) {
+        int result = 0;
+        if(root == null) {
+            return result;
+        }
+        LinkedList<TreeNode> levelList = new LinkedList<>();
+        LinkedList<Integer> valueList = new LinkedList<>();
+        levelList.add(root);
+        valueList.add(root.val);
+        while(!levelList.isEmpty()) {
+            LinkedList<TreeNode> nextLevel = new LinkedList<>();
+            LinkedList<Integer> nextValueList = new LinkedList<>();
+            for(int i = 0; i < levelList.size(); i++) {
+                TreeNode node = levelList.get(i);
+                int value = valueList.get(i);
+                if(node.left != null) {
+                    nextLevel.add(node.left);
+                    nextValueList.add(value * 2 + node.left.val);
+                }
+                if(node.right != null) {
+                    nextLevel.add(node.right);
+                    nextValueList.add(value * 2 + node.right.val);
+                }
+                if(node.left == null && node.right == null) {
+                    result += value;
+                }
+            }
+            levelList = nextLevel;
+            valueList = nextValueList;
+        }
+        return result;
     }
 }

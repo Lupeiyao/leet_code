@@ -13,5 +13,13 @@ public class TreeNode {
     public TreeNode(int val) {
         this.val = val;
     }
+
+    public TreeNode(int a, int b, int c) {
+        this.val = a;
+        TreeNode node1 = new TreeNode(b);
+        TreeNode node2 = new TreeNode(c);
+        left = node1;
+        right = node2;
+    }
 }
 
