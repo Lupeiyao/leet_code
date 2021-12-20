@@ -14,12 +14,16 @@ public class TreeNode {
         this.val = val;
     }
 
-    public TreeNode(int a, int b, int c) {
+    public TreeNode(Integer a, Integer b, Integer c) {
         this.val = a;
-        TreeNode node1 = new TreeNode(b);
-        TreeNode node2 = new TreeNode(c);
-        left = node1;
-        right = node2;
+        if(b != null) {
+            TreeNode node1 = new TreeNode(b);
+            left = node1;
+        }
+        if(c != null) {
+            TreeNode node2 = new TreeNode(c);
+            right = node2;
+        }
     }
 }
 

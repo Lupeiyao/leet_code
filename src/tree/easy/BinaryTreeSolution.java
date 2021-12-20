@@ -13,17 +13,12 @@ import java.util.*;
 public class BinaryTreeSolution {
 
     public static void main(String[] args) {
-        TreeNode root1 = new TreeNode(1, 0 ,1);
-        TreeNode node1 = new TreeNode(0);
-        TreeNode node2 = new TreeNode(1);
-        TreeNode node3 = new TreeNode(0);
-        TreeNode node4 = new TreeNode(1);
-        root1.left.left = node1;
-        root1.left.right = node2;
-        root1.right.left = node3;
-        root1.right.right = node4;
+        TreeNode root1 = new TreeNode(4, 2, 5);
+        root1.left.left = new TreeNode(1, 0, null);
+        root1.left.right = new TreeNode(3);
+        root1.right.right = new TreeNode(6);
 
-        System.out.println(new BinaryTreeSolution().sumRootToLeaf(root1));
+        System.out.println(new BinaryTreeSolution().convertBiNode(root1));
     }
 
     /*
@@ -704,4 +699,181 @@ public class BinaryTreeSolution {
         }
         return result;
     }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description BST的最近公共父节点
+     * @Link https://leetcode-cn.com/problems/lowest-common-ancestor-of-a-binary-search-tree/
+     * @Solution 从root开始，找到第一个大于一个、小于一个即可
+     * @Data 2021/12/20 22:50
+     */
+    public TreeNode lowestCommonAncestor1(TreeNode root, TreeNode p, TreeNode q) {
+        TreeNode lessNode = p.val < q.val ? p : q;
+        TreeNode bigNode = lessNode == p ? q : p;
+        TreeNode node = root;
+        while(node != p && node != q && (node.val > bigNode.val || node.val < lessNode.val)) {
+            if(node.val > bigNode.val) {
+                node = node.left;
+            } else if(node.val < lessNode.val) {
+                node = node.right;
+            }
+        }
+        return node;
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 计算二叉树的坡度，结点坡度=ABS(sum(left) - sum(right))，树的坡度为所有节点坡度和
+     * @Link https://leetcode-cn.com/problems/binary-tree-tilt/
+     * @Solution 递归
+     * @Data 2021/12/20 22:52
+     */
+    public int findTilt(TreeNode root) {
+        if(root == null) {
+            return 0;
+        }
+        HashMap<TreeNode, Integer> resultMap = new HashMap<>();
+        return findTilt(root.left) + findTilt(root.right) + Math.abs(valSum(root.left, resultMap) - valSum(root.right, resultMap));
+    }
+
+    private int valSum(TreeNode root, HashMap<TreeNode, Integer> resultMap) {
+        if(root == null) {
+            return 0;
+        }
+        if(resultMap.containsKey(root)) {
+            return resultMap.get(root);
+        }
+        int result = root.val + valSum(root.left, resultMap) + valSum(root.right, resultMap);
+        resultMap.put(root, result);
+        return result;
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 判断两颗树从左到右的叶子叶子值序列是否相同
+     * @Link https://leetcode-cn.com/problems/leaf-similar-trees/
+     * @Solution 双指针，分别遍历两个树的叶子节点，依次判断
+     * @Data 2021/12/20 21:58
+     */
+    public boolean leafSimilar(TreeNode root1, TreeNode root2) {
+        if(root1 == root2) {
+            return true;
+        }
+        if(root1 == null || root2 == null) {
+            return false;
+        }
+        BTLeaftIterator it1 = new BTLeaftIterator(root1);
+        BTLeaftIterator it2 = new BTLeaftIterator(root2);
+        TreeNode leaf1 = it1.nextLeaf();
+        TreeNode leaf2 = it2.nextLeaf();
+        while(leaf1 != null && leaf2 != null) {
+            if(leaf1.val != leaf2.val) {
+                return false;
+            }
+            leaf1 = it1.nextLeaf();
+            leaf2 = it2.nextLeaf();
+        }
+        if(leaf1 == null && leaf2 == null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private class BTLeaftIterator {
+        TreeNode cur;
+        LinkedList<TreeNode> stack = new LinkedList<>();
+        public BTLeaftIterator(TreeNode root) {
+            this.cur = root;
+        }
+
+        TreeNode nextLeaf() {
+            TreeNode leaf = null;
+            while(cur != null || !stack.isEmpty()) {
+                while(cur != null) {
+                    stack.push(cur);
+                    cur = cur.left;
+                }
+                cur = stack.pop();
+                if(cur.left == null || cur.right == null) {
+                    leaf = cur;
+                }
+                cur = cur.right;
+                if(leaf != null) {
+                    break;
+                }
+            }
+            return leaf;
+        }
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 把BST转换为链表（node.left = null, node.right = next_node）
+     * @Link https://leetcode-cn.com/problems/binode-lcci/
+     * @Solution 中序、逆中序遍历都可，存储前一个节点，注意中序遍历需要等遍历下个节点时才能cur.right = next，逆中序则相反
+     * @Data 2021/12/20 22:46
+     */
+    public TreeNode convertBiNode(TreeNode root) {
+        if(root == null) {
+            return root;
+        }
+        BSTIterator iterator = new BSTIterator(root);
+        TreeNode result = null;
+        TreeNode pre = null;
+        while(iterator.hasRightNext()) {
+            TreeNode cur = iterator.getRightNextNode();
+            if(pre == null) {
+                pre = cur;
+            } else {
+                cur.right = pre;
+                pre.left = null;
+                pre = cur;
+            }
+            result = cur;
+        }
+        result.left = null;
+        return result;
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 计算一个流输入的第k大元素
+     * @Link https://leetcode-cn.com/problems/jBjn9C/
+     * @Solution 小顶堆
+     * @Data 2021/12/20 22:46
+     */
+    private class KthLargest {
+
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        int k;
+
+         KthLargest(int k, int[] nums) {
+            this.k = k;
+            for(int i = 0; i < nums.length; i++) {
+                if(i < k) {
+                    pq.add(nums[i]);
+                } else if(nums[i] > pq.peek()) {
+                    pq.poll();
+                    pq.add(nums[i]);
+                }
+            }
+        }
+
+        public int add(int val) {
+            if(pq.size() < k) {
+                pq.add(val);
+            } else if(val > pq.peek()) {
+                pq.poll();
+                pq.add(val);
+            }
+            return pq.peek();
+        }
+    }
+
 }
