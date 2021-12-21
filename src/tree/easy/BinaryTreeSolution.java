@@ -876,4 +876,133 @@ public class BinaryTreeSolution {
         }
     }
 
+
+    /*
+     * @Author lupeiyao
+     * @Description 判断二叉树是否平衡树（任意节点的左右子树深度差不超过1）
+     * @Link https://leetcode-cn.com/problems/ping-heng-er-cha-shu-lcof/
+     * @Solution 递归，计算每个节点的深度
+     * @Data 2021/12/21 22:46
+     */
+    public boolean isBalanced(TreeNode root) {
+        if(root == null) {
+            return true;
+        }
+        TreeNode cur = root;
+        LinkedList<TreeNode> list = new LinkedList<>();
+        HashMap<TreeNode, Integer> map = new HashMap<>();
+        while(cur != null || !list.isEmpty()) {
+            while(cur != null) {
+                list.add(cur);
+                if(Math.abs(getDepth(cur.left, map) - getDepth(cur.right, map)) > 1) {
+                    return false;
+                }
+                cur = cur.left;
+            }
+            cur = list.pollLast();
+            cur = cur.right;
+        }
+        return true;
+    }
+
+    private int getDepth(TreeNode root, HashMap<TreeNode, Integer> map) {
+        if(root == null) {
+            return 0;
+        }
+        if(map.containsKey(root)) {
+            return map.get(root);
+        } else {
+            int depth = Math.max(getDepth(root.left, map), getDepth(root.right, map)) + 1;
+            map.put(root, depth);
+            return depth;
+        }
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 计算二叉树所有左叶子节点和
+     * @Link https://leetcode-cn.com/problems/sum-of-left-leaves/
+     * @Solution 先序遍历，左叶子节点一定是上一个节点的左子节点
+     * @Data 2021/12/21 22:46
+     */
+    public int sumOfLeftLeaves(TreeNode root) {
+        int result = 0;
+        if(root == null) {
+            return result;
+        }
+        TreeNode cur = root;
+        TreeNode pre = null;
+        LinkedList<TreeNode> list = new LinkedList<>();
+        while (cur != null || !list.isEmpty()) {
+            while (cur != null) {
+                if(pre != null && pre.left == cur && cur.left == null && cur.right == null) {
+                    result += cur.val;
+                }
+                list.add(cur);
+                pre = cur;
+                cur = cur.left;
+            }
+            cur = list.pollLast();
+            cur = cur.right;
+        }
+        return result;
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 判断二叉树是否对称
+     * @Link https://leetcode-cn.com/problems/dui-cheng-de-er-cha-shu-lcof/
+     * @Solution 层序遍历，从左向右和从右向左完全相同
+     * @Data 2021/12/21 22:46
+     */
+    public boolean isSymmetric(TreeNode root) {
+        if(root == null) {
+            return true;
+        }
+        LinkedList<TreeNode> leftQueue = new LinkedList<>();
+        LinkedList<TreeNode> rightQueue = new LinkedList<>();
+        if(root.left != null) {
+            leftQueue.add(root.left);
+        }
+        if(root.right != null) {
+            rightQueue.add(root.right);
+        }
+        while(!leftQueue.isEmpty() && leftQueue.size() == rightQueue.size()) {
+            LinkedList<TreeNode> newLeft = new LinkedList<>();
+            LinkedList<TreeNode> newRight = new LinkedList<>();
+            while(!leftQueue.isEmpty()) {
+                TreeNode left = leftQueue.pollFirst();
+                TreeNode right = rightQueue.pollFirst();
+                if(left.val != right.val) {
+                    return false;
+                }
+                if(left.left != null && right.right != null) {
+                    newLeft.add(left.left);
+                    newRight.add(right.right);
+                } else if(left.left == null && right.right == null) {
+                    //pass
+                } else {
+                    return false;
+                }
+                if(left.right != null && right.left != null) {
+                    newLeft.add(left.right);
+                    newRight.add(right.left);
+                } else if(left.right == null && right.left == null) {
+                    //pass
+                } else {
+                    return false;
+                }
+            }
+            leftQueue = newLeft;
+            rightQueue = newRight;
+        }
+        if(leftQueue.size() == rightQueue.size()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 }
