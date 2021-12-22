@@ -15,8 +15,8 @@ public class BinarySearchTree {
 
     public static void main(String[] args) {
         TreeNode root = new TreeNode(1);
-        root.left = new TreeNode(2, 3, 4);
-        root.right = new TreeNode(2, 4, 3);
+        root.right = new TreeNode(2, 2, null);
+        System.out.println(new BinarySearchTree().findMode(root));
     }
 
 
@@ -315,6 +315,58 @@ public class BinarySearchTree {
         }
         result.left = null;
         return result;
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 找到BST中所有节点的众数
+     * @Link https://leetcode-cn.com/problems/find-mode-in-binary-search-tree/
+     * @Solution 中序遍历，保存状态
+     * @Data 2021/12/21 22:46
+     */
+    public int[] findMode(TreeNode root) {
+        TreeNode cur = root;
+        LinkedList<TreeNode> list = new LinkedList<>();
+        Integer pre = null;
+        int preCnt = 0;
+        int maxCnt = 0;
+        LinkedList<Integer> result = new LinkedList<>();
+        while(cur != null || !list.isEmpty()) {
+            while(cur != null) {
+                list.add(cur);
+                cur = cur.left;
+            }
+            cur = list.pollLast();
+            if(pre == null) {
+                pre = cur.val;
+            }
+            if(cur.val == pre) {
+                preCnt++;
+            } else {
+                if(preCnt > maxCnt) {
+                    maxCnt = preCnt;
+                    result.clear();
+                    result.add(pre);
+                } else if(preCnt == maxCnt) {
+                    result.add(pre);
+                }
+                preCnt = 1;
+            }
+            pre = cur.val;
+            cur = cur.right;
+        }
+        if(preCnt > maxCnt) {
+            result.clear();
+            result.add(pre);
+        } else if(preCnt == maxCnt) {
+            result.add(pre);
+        }
+        int[] temp = new int[result.size()];
+        for(int i = 0; i < temp.length; i++) {
+            temp[i] = result.get(i);
+        }
+        return temp;
     }
 
 }

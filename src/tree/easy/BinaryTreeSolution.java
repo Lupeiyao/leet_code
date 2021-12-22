@@ -774,4 +774,169 @@ public class BinaryTreeSolution {
         }
     }
 
+
+    //`
+    /*
+     * @Author lupeiyao
+     * @Description 二叉树直径（任意两个节点之间路径长度的最大值）
+     * @Link https://leetcode-cn.com/problems/diameter-of-binary-tree/x
+     * @Solution 所有节点左右子树深度之和的最大值
+     * @Data 2021/12/21 22:46
+     */
+    public int diameterOfBinaryTree(TreeNode root) {
+        int result = 0;
+        TreeNode cur = root;
+        LinkedList<TreeNode> list = new LinkedList<>();
+        while(cur != null || !list.isEmpty()) {
+            while(cur != null) {
+                list.add(cur);
+                int leftDepth = getDepth(cur.left);
+                int rightDepth = getDepth(cur.right);
+                if(leftDepth != 0 || rightDepth != 0) {
+                    result = Math.max(result, leftDepth + rightDepth);
+                }
+                cur = cur.left;
+            }
+            cur = list.pollLast();
+            cur = cur.right;
+        }
+        return result;
+    }
+
+    private int getDepth(TreeNode root) {
+        int result = 0 ;
+        if(root == null) {
+            return result;
+        } else {
+            return Math.max(getDepth(root.left), getDepth(root.right)) + 1;
+        }
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 判断从root到任意一叶子节点的路径和是否有targetSum
+     * @Link https://leetcode-cn.com/problems/path-sum/
+     * @Solution 层序遍历
+     * @Data 2021/12/21 22:46
+     */
+    public boolean hasPathSum(TreeNode root, int targetSum) {
+        if(root == null) {
+            return false;
+        }
+        LinkedList<TreeNode> nodeQueue = new LinkedList<>();
+        LinkedList<Integer> sumQueue = new LinkedList<>();
+        nodeQueue.add(root);
+        sumQueue.add(root.val);
+        while(!nodeQueue.isEmpty()) {
+            LinkedList<TreeNode> newNodeQueue = new LinkedList<>();
+            LinkedList<Integer> newSumQueue = new LinkedList<>();
+            for(int i = 0; i < nodeQueue.size(); i++) {
+                TreeNode cur = nodeQueue.get(i);
+                int curVal = sumQueue.get(i);
+                if(cur.left == null && cur.right == null && curVal == targetSum) {
+                    return true;
+                }
+                if(cur.left != null) {
+                    newNodeQueue.add(cur.left);
+                    newSumQueue.add(curVal + cur.left.val);
+                }
+                if(cur.right != null) {
+                    newNodeQueue.add(cur.right);
+                    newSumQueue.add(curVal + cur.right.val);
+                }
+            }
+            nodeQueue = newNodeQueue;
+            sumQueue = newSumQueue;
+        }
+        return false;
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 判断二叉树两个节点同层且非同父亲
+     * @Link https://leetcode-cn.com/problems/cousins-in-binary-tree/
+     * @Solution 层序遍历
+     * @Data 2021/12/21 22:46
+     */
+    public boolean isCousins(TreeNode root, int x, int y) {
+        if(root == null || root.val == x || root.val == y) {
+            return false;
+        }
+        ArrayList<TreeNode> queue = new ArrayList<>();
+        ArrayList<TreeNode> fatherQueue = new ArrayList<>();
+        if(root.left != null) {
+            fatherQueue.add(root);
+            queue.add(root.left);
+        }
+        if(root.right != null) {
+            fatherQueue.add(root);
+            queue.add(root.right);
+        }
+        while(!queue.isEmpty()) {
+            ArrayList<TreeNode> newQueue = new ArrayList<>();
+            ArrayList<TreeNode> newFatherQueue = new ArrayList<>();
+            boolean xInCurLevel = false;
+            boolean yInCurLevel = false;
+            TreeNode xFather = null;
+            TreeNode yFather = null;
+            for(int i = 0; i < queue.size(); i++) {
+                TreeNode node = queue.get(i);
+                TreeNode father = fatherQueue.get(i);
+                if(node.val == x) {
+                    xInCurLevel = true;
+                    xFather = father;
+                }
+                if(node.val == y) {
+                    yInCurLevel = true;
+                    yFather = father;
+                }
+                if(node.left != null) {
+                    newQueue.add(node.left);
+                    newFatherQueue.add(node);
+                }
+                if(node.right != null) {
+                    newQueue.add(node.right);
+                    newFatherQueue.add(node);
+                }
+            }
+            if(!xInCurLevel && yInCurLevel) {
+                return false;
+            } else if(xInCurLevel && !yInCurLevel) {
+                return false;
+            } else if(xInCurLevel && yInCurLevel && xFather != yFather) {
+                return true;
+            } else {
+                queue = newQueue;
+                fatherQueue = newFatherQueue;
+            }
+        }
+        return false;
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 把BT转换成字符串root.val(root.left.val)(root.right.val)，如果root.right=null，可以省略
+     * @Link https://leetcode-cn.com/problems/construct-string-from-binary-tree/
+     * @Solution 递归
+     * @Data 2021/12/21 22:46
+     */
+    public String tree2str(TreeNode root) {
+
+        if(root == null) {
+            return "";
+        } else if(root.left != null && root.right != null){
+            return root.val + "(" + tree2str(root.left) + ")(" + tree2str(root.right) + ")";
+        } else if(root.left == null && root.right != null) {
+            return root.val + "()(" + tree2str(root.right) + ")";
+        } else if(root.left != null && root.right == null) {
+            return root.val + "(" + tree2str(root.left) + ")";
+        } else {
+            return root.val + "";
+        }
+    }
+
+
 }
