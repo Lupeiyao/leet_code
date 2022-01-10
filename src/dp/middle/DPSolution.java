@@ -2,10 +2,7 @@ package dp.middle;
 
 import tree.TreeNode;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -16,7 +13,8 @@ import java.util.stream.Collectors;
  */
 public class DPSolution {
     public static void main(String[] args) {
-        System.out.println(new DPSolution().stoneGame(new int[]{5, 3, 4, 5}));
+        List<List<Integer>> list = new ArrayList<>();
+        System.out.println(new DPSolution().longestPalindrome("abbaabb"));
     }
 
     /*
@@ -158,4 +156,91 @@ public class DPSolution {
         }
         return dp[0][n - 1] > 0;
     }
+
+    /*
+     * @Author lupeiyao
+     * @Description 给定长m、宽m的网格，从左上角走上右上角有多少种走法（只能向上或向右）
+     * @Link
+     * @Solution dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
+     * @Data 2022/1/6 16:28
+     */
+    public int uniquePaths(int m, int n) {
+        int[][] dp = new int[m][n];
+        dp[0][0] = 1;
+        for(int i = 0 ; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                if(i - 1 >= 0) dp[i][j] += dp[i - 1][j];
+                if(j - 1 >= 0) dp[i][j] += dp[i][j - 1];
+            }
+        }
+        return dp[m - 1][n - 1];
+    }
+
+    /*
+     * @Author lupeiyao
+     * @Description 给定数组num，取值均不同，求num[i]>num[j]>num[k]（或小于）的数量(i<j<k)
+     * @Link
+     * @Solution biggerNum[i]表示num[i]后有几个比num[i]大。
+     * if(num[j]>num[i]） 则num[i]可以组成biggerNum[j]个组合
+     * @Data 2022/1/6 16:25
+     */
+    public int numTeams(int[] rating) {
+        int result = 0;
+        int[] biggerNum = new int[rating.length];
+        int[] lessNum = new int[rating.length];
+        for(int i = 0; i < rating.length; i++) {
+            for(int j = i + 1; j < rating.length; j++) {
+                if(rating[j] > rating[i]) {
+                    biggerNum[i] += 1;
+                } else {
+                    lessNum[i] += 1;
+                }
+            }
+        }
+        for(int i = 0; i < rating.length; i++) {
+            for(int j = i + 1; j < rating.length; j++) {
+                if(rating[j] > rating[i]) {
+                    result += biggerNum[j];
+                }
+                if(rating[j] < rating[i]) {
+                    result += lessNum[j];
+                }
+            }
+        }
+        return result;
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 最长回文子串
+     * @Link https://leetcode-cn.com/problems/longest-palindromic-substring/
+     * @Solution dp[i][j] = true表示str[i:j]为回文串，计算所有长度为2的串是否回文。
+     * 依次计算长度为3，4...的所有子串是否回文，dp[i][i+j] = dp[i+1][i+j-1] && str[i] == str[i+j]
+     * @Data 2022/1/6 16:22
+     */
+    public String longestPalindrome(String s) {
+        char[] chars = s.toCharArray();
+        boolean[][] dp = new boolean[chars.length][chars.length];
+        for(int i = 0; i < dp.length; i++) dp[i][i] = true;
+        int start = 0;
+        int end = 1;
+        for(int i = 1; i < s.length(); i++) {
+            for(int j = 0; j < s.length() && j + i < s.length(); j++) {
+                if(chars[j] == chars[j + i]) {
+                    if(i <= 2) {
+                        dp[j][j + i] = true;
+                    } else {
+                        dp[j][j + i] = dp[j + 1][ j + i - 1];
+                    }
+                }
+                if(dp[j][j + i]) {
+                    start = j;
+                    end = j + i + 1;
+                }
+            }
+        }
+        return s.substring(start, end);
+    }
+
 }
