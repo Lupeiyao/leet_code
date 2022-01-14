@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class DPSolution {
     public static void main(String[] args) {
         List<List<Integer>> list = new ArrayList<>();
-        System.out.println(new DPSolution().longestPalindrome("abbaabb"));
+        System.out.println(new DPSolution().lengthOfLongestSubstring("pwwkew"));
     }
 
     /*
@@ -243,4 +243,30 @@ public class DPSolution {
         return s.substring(start, end);
     }
 
+    /*
+     * @Author lupeiyao
+     * @Description 最长的不包含重复字符的子串
+     * @Link https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
+     * @Solution 双指针
+     * @Data 2022/1/14 15:20
+     */
+    public int lengthOfLongestSubstring(String s) {
+        int result = 0;
+        // 上一个字符开始的最长串的结尾索引
+        int lastIndex = 0;
+        char[] chars = s.toCharArray();
+        HashSet<Character> set = new HashSet<>();
+        for(int i = 0; i < chars.length; i++) {
+            while(lastIndex != s.length() && !set.contains(chars[lastIndex])) {
+                set.add(chars[lastIndex]);
+                lastIndex += 1;
+            }
+            result = Math.max(result, lastIndex - i);
+            if(lastIndex == s.length()) {
+                break;
+            }
+            set.remove(chars[i]);
+        }
+        return result;
+    }
 }
