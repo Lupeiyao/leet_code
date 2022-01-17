@@ -11,7 +11,7 @@ import java.math.BigInteger;
 public class Solution {
 
     public static void main(String[] args) {
-        System.out.println(new Solution().isAdditiveNumber("11111111111011111111111"));
+        System.out.println(new Solution().intToRoman(1994));
     }
 
     /*
@@ -74,4 +74,56 @@ public class Solution {
         return sb.reverse().toString();
     }
 
+    /*
+     * @Author lupeiyao
+     * @Description 给定数组nums，求Max(min(nums[i], nums[j]) * (j - i))，i < j
+     * @Link https://leetcode-cn.com/problems/container-with-most-water/
+     * @Solution 双指针，每次移动小的即可。假设从[i,j]中找最大的，那么一定是(i,j)或者其他，
+     * 如果nums[i]<nums[j]，那么(i,j-1),x(i-2)...一定小于(i,j)，所以移动i就行
+     * @Data 2022/1/17 21:10
+     */
+    public int maxArea(int[] height) {
+        int max = Integer.MIN_VALUE;
+        for(int i = 0, j = height.length - 1; i < j;) {
+            max = Math.max(max, Math.min(height[i], height[j]) * (j - i));
+            if(height[i] < height[j]) {
+                i++;
+            } else {
+                j--;
+            }
+        }
+        return max;
+    }
+
+    /*
+     * @Author lupeiyao
+     * @Description 数字转罗马数字表示
+     * @Link https://leetcode-cn.com/problems/integer-to-roman/comments/
+     * @Solution 每一位的数字硬编码即可
+     * @Data 2022/1/17 21:09
+     */
+    public String intToRoman(int num) {
+        StringBuilder sb = new StringBuilder();
+        String[][] x = new String[][] {{"I", "V", "X"}, {"X", "L", "C"}, {"C", "D", "M"}, {"M"}};
+        for(int i = 0; num != 0; i++, num /= 10) {
+            int temp = num % 10;
+            if(temp <= 3) {
+                for(int j = 0; j < temp; j++) {
+                    sb.append(x[i][0]);
+                }
+            } else if(temp == 4) {
+                sb.append(x[i][1] + x[i][0]);
+            } else if(temp == 5) {
+                sb.append(x[i][1]);
+            } else if(temp == 9) {
+                sb.append(x[i][2] + x[i][0]);
+            } else {
+                for(int j = 0; j < temp - 5; j++) {
+                    sb.append(x[i][0]);
+                }
+                sb.append(x[i][1]);
+            }
+        }
+        return sb.reverse().toString();
+    }
 }
