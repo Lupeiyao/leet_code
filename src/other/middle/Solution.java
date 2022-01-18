@@ -1,6 +1,10 @@
 package other.middle;
 
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @Author lupeiyao
@@ -11,7 +15,7 @@ import java.math.BigInteger;
 public class Solution {
 
     public static void main(String[] args) {
-        System.out.println(new Solution().intToRoman(1994));
+        System.out.println(new Solution().threeSum(new int[]{-2, 0, 0, 1, 1}));
     }
 
     /*
@@ -125,5 +129,49 @@ public class Solution {
             }
         }
         return sb.reverse().toString();
+    }
+
+    /*
+     * @Author lupeiyao
+     * @Description 给定数组，求和为0的所有不重复3元组
+     * @Link https://leetcode-cn.com/problems/3sum/
+     * @Solution 排序，对于大于等于0的第i个元素，在[0,i-1]范围找和为-num[i]的两个数字
+     * 不重复过滤，每次判断当前元素不等于上个元素即可，注意要从范围大的开始找，范围大的找完，
+     * 下一个如果和当前元素相等才可以跳过，如果从小的开始会有问题
+     * @Data 2022/1/18 21:46
+     */
+    public List<List<Integer>> threeSum(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        if(nums == null || nums.length < 3) return result;
+        Arrays.sort(nums);
+        for(int i = nums.length - 1; i >= 0; i--) {
+            if(nums[i] < 0 || (i < nums.length - 1 && nums[i] == nums[i + 1])) {
+                continue;
+            }
+            int left = 0;
+            int right = i - 1;
+            while(left < right) {
+                if(nums[left] + nums[right] == -nums[i]) {
+                    List<Integer> list = new ArrayList<>(3);
+                    list.add(nums[left]);
+                    list.add(nums[right]);
+                    list.add(nums[i]);
+                    result.add(list);
+                    while(left + 1 < nums.length && nums[left + 1] == nums[left]) {
+                        left++;
+                    }
+                    while(right - 1 > 0 && nums[right - 1] == nums[right]) {
+                        right--;
+                    }
+                    left++;
+                    right--;
+                } else if(nums[left] + nums[right] > -nums[i]) {
+                    right--;
+                } else {
+                    left++;
+                }
+            }
+        }
+        return result;
     }
 }
