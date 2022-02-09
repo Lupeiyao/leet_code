@@ -1,5 +1,7 @@
 package other.easy;
 
+import java.util.LinkedList;
+
 /**
  * @Author Lunus
  * @Description TODO
@@ -9,7 +11,7 @@ package other.easy;
 public class Solution {
 
     public static void main(String[] args) {
-        System.out.println(new Solution().maxCount(3, 3, new int[][]{{2, 2}, {3, 3}}));
+//        System.out.println(new Solution().isValid("()[]{}"));
     }
 
     /*

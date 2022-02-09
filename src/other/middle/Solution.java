@@ -1,10 +1,7 @@
 package other.middle;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @Author lupeiyao
@@ -15,7 +12,7 @@ import java.util.List;
 public class Solution {
 
     public static void main(String[] args) {
-        System.out.println(new Solution().threeSum(new int[]{-2, 0, 0, 1, 1}));
+        System.out.println(new Solution().threeSumClosest(new int[]{-1, 2, 1, -4}, 1));
     }
 
     /*
@@ -174,4 +171,36 @@ public class Solution {
         }
         return result;
     }
+
+    /*
+     * @Author lupeiyao
+     * @Description 给定数组，找到其中三个加起来最接近target的和
+     * @Link https://leetcode-cn.com/problems/3sum-closest/
+     * @Solution 排序，遍历nums数组，假设在一定包含nums[i]的情况下，找另外两个。
+     * 双指针遍历nums[i+1,end]，如果三数之和大于target，则end--，否则start++
+     * @Data 2022/1/19 19:45
+     */
+    public int threeSumClosest(int[] nums, int target) {
+        Integer res = null;
+        Arrays.sort(nums);
+        for(int i = 0; i < nums.length - 2; i++) {
+            int left = i + 1;
+            int right = nums.length - 1;
+            while(left < right) {
+                int curSum = nums[left] + nums[right] + nums[i];
+                if(res == null || Math.abs(res - target) > Math.abs(curSum - target)) {
+                    res = curSum;
+                }
+                if(curSum == target) {
+                    return target;
+                } else if(curSum > target) {
+                    right--;
+                } else {
+                    left++;
+                }
+            }
+        }
+        return res;
+    }
+
 }
