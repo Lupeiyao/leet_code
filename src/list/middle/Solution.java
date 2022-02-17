@@ -64,4 +64,32 @@ public class Solution {
         }
         return dummy.next;
     }
+
+    /*
+     * @Author lynnliu
+     * @Description 两两交换链表的节点
+     * @Link https://leetcode-cn.com/problems/swap-nodes-in-pairs/
+     * @Solution dummy节点
+     * @Data 2022/2/17 7:21 PM
+     */
+    public ListNode swapPairs(ListNode head) {
+        ListNode dummy = new ListNode(0, head);
+        ListNode cur = dummy;
+        while(cur != null) {
+            ListNode next = cur.next;
+            if(next == null) {
+                return dummy.next;
+            }
+            ListNode nextNext = next.next;
+            if(nextNext == null) {
+                return dummy.next;
+            }
+            cur.next = nextNext;
+            next.next = nextNext.next;
+            nextNext.next = next;
+            cur = cur.next.next;
+        }
+        return dummy.next;
+    }
+
 }
