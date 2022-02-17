@@ -12,7 +12,7 @@ import java.util.*;
 public class Solution {
 
     public static void main(String[] args) {
-        System.out.println(new Solution().threeSumClosest(new int[]{-1, 2, 1, -4}, 1));
+        System.out.println(new Solution().spiralOrder(new int[][]{{1,2,3,4},{5,6,7,8},{9,10,11,12}}));
     }
 
     /*
@@ -203,4 +203,94 @@ public class Solution {
         return res;
     }
 
+    /*
+     * @Author lynnliu
+     * @Description 按照顺时针打印二位数组
+     * @Link https://leetcode-cn.com/problems/spiral-matrix/
+     * @Solution
+     * @Data 2022/2/17 8:41 PM
+     */
+    public List<Integer> spiralOrder(int[][] matrix) {
+        int curRow = 0;
+        int curCol = 0;
+        int leftLimit = -1;
+        int rightLimit = matrix[0].length;
+        int lowLimit = -1;
+        int highLimit = matrix.length;
+        List<Integer> result = new LinkedList<>();
+        while (curCol > leftLimit && curCol < rightLimit && curRow > lowLimit && curRow < highLimit) {
+            for(int i = leftLimit + 1; i < rightLimit && lowLimit + 1 < highLimit; i++) {
+                result.add(matrix[lowLimit + 1][i]);
+            }
+            lowLimit += 1;
+            for(int i = lowLimit + 1; i < highLimit && rightLimit - 1 > leftLimit; i++) {
+                result.add(matrix[i][rightLimit - 1]);
+            }
+            rightLimit -= 1;
+            for(int i = rightLimit - 1; i > leftLimit && highLimit - 1 > lowLimit; i--) {
+                result.add(matrix[highLimit - 1][i]);
+            }
+            highLimit -= 1;
+            for(int i = highLimit - 1; i > lowLimit && leftLimit + 1 < rightLimit; i--) {
+                result.add(matrix[i][leftLimit + 1]);
+            }
+            leftLimit += 1;
+            curRow = lowLimit + 1;
+            curCol = leftLimit + 1;
+        }
+        return result;
+    }
+
+    /*
+     * @Author lynnliu
+     * @Description 从nums[i]开始，最大可以跳到i+nums[i]下标处，判断从0开始是否能到最后
+     * @Link https://leetcode-cn.com/problems/jump-game/
+     * @Solution 从0开始遍历，如果i+nums[i]>=nums.length-1就可以
+     * @Data 2022/2/17 8:43 PM
+     */
+    public boolean canJump(int[] nums) {
+        if(nums == null || nums.length < 2) {
+            return true;
+        }
+        int max = nums[0];
+        for(int i = 1; i <= max; i++) {
+            if(max >= nums.length - 1) {
+                return true;
+            } else {
+                max = Math.max(max, i + nums[i]);
+            }
+        }
+        return false;
+    }
+
+    /*
+     * @Author lynnliu
+     * @Description 给定n个范围，合并有重复区域的范围
+     * @Link https://leetcode-cn.com/problems/merge-intervals/
+     * @Solution 按照每个范围的start排序，然后顺序向前合并
+     * @Data 2022/2/17 8:59 PM
+     */
+    public int[][] merge(int[][] intervals) {
+        if(intervals == null || intervals.length < 2) {
+            return intervals;
+        }
+        Comparator comparator = new Comparator<int[]>() {
+            @Override
+            public int compare(int[] o1, int[] o2) {
+                return o1[0] - o2[0];
+            }
+        };
+        Arrays.sort(intervals, comparator);
+        List<int[]> result = new ArrayList<>();
+        result.add(intervals[0]);
+        for(int i = 1; i < intervals.length; i++) {
+            int[] pre = result.get(result.size() - 1);
+            if(intervals[i][0] > pre[1]) {
+                result.add(intervals[i]);
+            } if(intervals[i][0] <= pre[1] && intervals[i][1] > pre[1]) {
+                pre[1] = intervals[i][1];
+            }
+        }
+        return result.toArray(new int[result.size()][2]);
+    }
 }
