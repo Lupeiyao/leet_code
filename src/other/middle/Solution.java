@@ -12,7 +12,7 @@ import java.util.*;
 public class Solution {
 
     public static void main(String[] args) {
-        System.out.println(new Solution().spiralOrder(new int[][]{{1,2,3,4},{5,6,7,8},{9,10,11,12}}));
+        System.out.println(new Solution().simplifyPath("/a//b////c/d//././/.."));
     }
 
     /*
@@ -292,5 +292,45 @@ public class Solution {
             }
         }
         return result.toArray(new int[result.size()][2]);
+    }
+
+    /*
+     * @Author lynnliu
+     * @Description 给定linux的路径，请简化。（'//'，'.'和'..'需要进行简化)
+     * @Link https://leetcode-cn.com/problems/simplify-path/submissions/
+     * @Solution 用'/'进行split，""，"."相当于无效，".."把上一个有效的内容无效
+     * @Data 2022/2/22 9:16 PM
+     */
+    public String simplifyPath(String path) {
+        StringBuilder sb = new StringBuilder();
+        String[] strs = path.split("/");
+        int[] valid = new int[strs.length];
+        for(int i = 0; i < strs.length; i++) {
+            if(strs[i].equals(".")) {
+                valid[i] = 0;
+            } else if(strs[i].equals("")) {
+                valid[i] = 0;
+            } else if(strs[i].equals("..")) {
+                valid[i] = 0;
+                for(int j = i - 1; j >= 0; j--) {
+                    if(valid[j] == 1) {
+                        valid[j] = 0;
+                        break;
+                    }
+                }
+            } else {
+                valid[i] = 1;
+            }
+        }
+        for(int i = 0; i < strs.length; i++) {
+            if(valid[i] == 1) {
+                sb.append("/");
+                sb.append(strs[i]);
+            }
+        }
+        if(sb.length() == 0) {
+            sb.append("/");
+        }
+        return sb.toString();
     }
 }
