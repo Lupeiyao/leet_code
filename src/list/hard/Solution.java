@@ -14,7 +14,14 @@ import java.util.List;
  */
 public class Solution {
     public static void main(String[] args) {
-
+        ListNode head = new ListNode(1);
+        ListNode node1 = new ListNode(2);
+        ListNode node2 = new ListNode(3);
+        ListNode node3 = new ListNode(4);
+        head.next = node1;
+        node1.next = node2;
+        node2.next = node3;
+        System.out.println(new Solution().reverseKGroup(head, 2));
     }
 
     /*
@@ -56,5 +63,36 @@ public class Solution {
         }
         return dummy.next;
 
+    }
+
+    /*
+     * @Author lynnliu k个一组翻转链表
+     * @Description 每k个node翻转一次，最后小于k个则不翻转
+     * @Link https://leetcode-cn.com/problems/reverse-nodes-in-k-group
+     * @Solution dummy节点，list或者函数翻转k个
+     * @Data 2022/2/17 7:17 PM
+     */
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if(k < 2) return head;
+        ListNode dummy = new ListNode(0, head);
+        ListNode cur = dummy;
+        ArrayList<ListNode> list = new ArrayList<>(k);
+        while(cur != null) {
+            ListNode temp = cur.next;
+            for(int i = 0; temp != null && i < k; i++, temp = temp.next) {
+                list.add(temp);
+            }
+            if(list.size() != k) {
+                return dummy.next;
+            }
+            list.get(0).next = list.get(k - 1).next;
+            cur.next = list.get(k - 1);
+            for(int i = k - 1; i > 0; i--) {
+                list.get(i).next = list.get(i - 1);
+            }
+            cur = list.get(0);
+            list.clear();
+        }
+        return dummy.next;
     }
 }
