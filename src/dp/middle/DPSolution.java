@@ -269,4 +269,30 @@ public class DPSolution {
         }
         return result;
     }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 给定字符串，判断能否由给定的单词组成，单词可重复多次使用
+     * @Link
+     * @Solution dp[i]表示str.substring(0, i)能否由给定单词组成
+     * @Data 2022/4/19 20:28
+     */
+    public boolean wordBreak(String s, List<String> wordDict) {
+        if(s == null || s.length() == 0) {
+            return true;
+        }
+        Set<String> set = new HashSet<>(wordDict);
+        int[] dp = new int[s.length() + 1];
+        dp[0] = 1;
+        for(int i = 1; i < dp.length; i++) {
+            for(int j = 0; j < i; j++) {
+                if(set.contains(s.substring(j, i)) && dp[j] == 1) {
+                    dp[i] = 1;
+                    break;
+                }
+            }
+        }
+        return dp[s.length()] == 1;
+    }
 }

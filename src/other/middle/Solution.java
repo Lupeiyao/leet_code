@@ -203,4 +203,143 @@ public class Solution {
         return res;
     }
 
+
+    /*
+     * @Author lupeiyao
+     * @Description 给定排序数组（有重复)，查找target的开始和结束下标
+     * @Link
+     * @Solution 二分查找
+     * @Data 2022/3/29 11:11
+     */
+    public int[] searchRange(int[] nums, int target) {
+        int[] result = new int[]{-1, -1};
+        if(nums == null || nums.length < 1) {
+            return result;
+        }
+        int start = 0;
+        int end = nums.length - 1;
+        while(start <= end) {
+            int middle = (start + end) / 2;
+            if(nums[middle] == target) {
+                result[0] = middle;
+                end = middle - 1;
+            } else if(nums[middle] < target) {
+                start = middle + 1;
+            } else {
+                end = middle - 1;
+            }
+        }
+
+        start = 0;
+        end = nums.length - 1;
+        while(start <= end) {
+            int middle = (start + end) / 2;
+            if(nums[middle] == target) {
+                result[1] = middle;
+                start = middle + 1;
+            } else if(nums[middle] < target) {
+                start = middle + 1;
+            } else {
+                end = middle - 1;
+            }
+        }
+        return result;
+    }
+
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 给定不重复排序数组，把后K个元素放到前面：[7,8,9,1,2,3]，找到target下标
+     * @Link
+     * @Solution 二叉搜索，如果nums[l:m]为排序数组，target在[nums[l],nums[m]]之间，在nums[l:m]中间找，否则去nums[m:r]
+     * 否则nums[m:r]为排序数组，target在[nums[m],nums[r]]之间，在nums[m,r]中间找，否则在nums[l,m]
+     * @Data 2022/4/19 14:43
+     */
+    public int search(int[] nums, int target) {
+        int result = -1;
+        if(nums == null || nums.length == 0) {
+            return result;
+        }
+        int start = 0;
+        int end = nums.length - 1;
+        while(start <= end) {
+            int middle = (start + end) / 2;
+            if(nums[middle] == target) {
+                result = middle;
+                break;
+            }
+            if(nums[start] <= nums[middle]) {
+                if(target >= nums[start] && target < nums[middle]) {
+                    end = middle - 1;
+                } else {
+                    start = middle + 1;
+                }
+            } else {
+                if(target > nums[middle] && target <= nums[nums.length - 1]) {
+                    start = middle + 1;
+                } else {
+                    end = middle - 1;
+                }
+            }
+        }
+        return result;
+    }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 给定不重复数组，求和为sum的所有情况（可多选）
+     * @Link
+     * @Solution 递归即可，由于[a,a,b]和[b,a,a]认为是一样的，每次要向后寻找
+     * @Data 2022/4/19 15:19
+     */
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> result = helper(candidates, target, 0);
+        return result;
+    }
+
+    public List<List<Integer>> helper(int[] candidates, int target, int start) {
+        List<List<Integer>> result = new ArrayList<>();
+        for(int i = start; i < candidates.length; i++) {
+            if(candidates[i] == target) {
+                List<Integer> list = new ArrayList<>();
+                list.add(candidates[i]);
+                result.add(list);
+            } else if(candidates[i] < target) {
+                List<List<Integer>> tmp = helper(candidates, target - candidates[i], i);
+                for(List<Integer> list : tmp) {
+                    list.add(candidates[i]);
+                }
+                result.addAll(tmp);
+            }
+        }
+        return result;
+    }
+
+    /*
+     * @Author lupeiyao
+     * @Description 给定数组nums，返回nums[i]后面第几个大于nums[i]
+     * @Link
+     * @Solution 单调递减栈，如果当前元素大于栈顶元素，弹栈直到小于或者空，然后再add当前元素。
+     * @Data 2022/4/19 20:52
+     */
+    public int[] dailyTemperatures(int[] temperatures) {
+        int[] result = new int[temperatures.length];
+        LinkedList<Integer> list = new LinkedList<>();
+        for(int i = 0; i < temperatures.length; i++) {
+            while(!list.isEmpty()) {
+                int preIdx = list.getLast();
+                if(temperatures[i] > temperatures[preIdx]) {
+                    result[preIdx] = (i - preIdx);
+                    list.removeLast();
+                } else {
+                    break;
+                }
+            }
+            list.add(i);
+        }
+        return result;
+    }
+
 }
