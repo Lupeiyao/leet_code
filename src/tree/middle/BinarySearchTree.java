@@ -42,6 +42,32 @@ public class BinarySearchTree {
 
 
     }
+
+    /*
+     * @Author lupeiyao
+     * @Description 给定二叉检索数，判读是否合法
+     * @Link
+     * @Solution 前序遍历，查看是否满足pre < cur
+     * @Data 2022/5/5 20:43
+     */
+    public boolean isValidBST(TreeNode root) {
+        if(root == null) return false;
+        LinkedList<TreeNode> list = new LinkedList<>();
+        Integer preVal = null;
+        while(root != null || !list.isEmpty()) {
+            while(root != null) {
+                list.add(root);
+                root = root.left;
+            }
+            root = list.removeLast();
+            if(preVal != null && root.val <= preVal) {
+                return false;
+            }
+            preVal = root.val;
+            root = root.right;
+        }
+        return true;
+    }
 }
 
 

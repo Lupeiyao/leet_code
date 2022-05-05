@@ -295,4 +295,24 @@ public class DPSolution {
         }
         return dp[s.length()] == 1;
     }
+
+
+    /*
+     * @Author lupeiyao
+     * @Description 给定数据1-n，求可组成的左右不同二叉搜索树
+     * @Link
+     * @Solution 遍历每个节点作为根节点，result += left_num * right_num，存储历史结果
+     * @Data 2022/5/5 20:41
+     */
+    public int numTrees(int n) {
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for(int i = 2; i < dp.length; i++) {
+            for(int j = 1; j <= i; j++) {
+                dp[i] += dp[j - 1] * dp[i - j];
+            }
+        }
+        return dp[n];
+    }
 }
