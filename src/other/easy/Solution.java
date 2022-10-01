@@ -1,6 +1,8 @@
 package other.easy;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * @Author Lunus
@@ -44,5 +46,28 @@ public class Solution {
             }
         }
         return minRow * minColumn;
+    }
+
+
+    /*
+     * @Author Lunus
+     * @Description 给定target，求数组中arr[i] + arr[j] = target的唯一i、j
+     * @Link https://leetcode.cn/problems/two-sum/?favorite=2cktkvj
+     * @Solution 使用map即可，注意只需遍历一次（可去重），碰到第二个是，第一个数一定已经存在了
+     * Date 2022-10-01
+     */
+    public int[] twoSum(int[] nums, int target) {
+        int[] result = new int[2];
+        Map<Integer, Integer> map = new HashMap<>();
+        for(int i = 0; i < nums.length; i++) {
+            if(map.containsKey(target - nums[i])) {
+                result[0] = i;
+                result[1] = map.get(target - nums[i]);
+                break;
+            } else {
+                map.put(nums[i], i);
+            }
+        }
+        return result;
     }
 }

@@ -12,7 +12,7 @@ import java.util.*;
 public class Solution {
 
     public static void main(String[] args) {
-        System.out.println(new Solution().threeSumClosest(new int[]{-1, 2, 1, -4}, 1));
+        System.out.println(new Solution().letterCombinations("23"));
     }
 
     /*
@@ -84,7 +84,7 @@ public class Solution {
      * @Data 2022/1/17 21:10
      */
     public int maxArea(int[] height) {
-        int max = Integer.MIN_VALUE;
+        int max = 0;
         for(int i = 0, j = height.length - 1; i < j;) {
             max = Math.max(max, Math.min(height[i], height[j]) * (j - i));
             if(height[i] < height[j]) {
@@ -132,37 +132,36 @@ public class Solution {
      * @Author lupeiyao
      * @Description 给定数组，求和为0的所有不重复3元组
      * @Link https://leetcode-cn.com/problems/3sum/
-     * @Solution 排序，对于大于等于0的第i个元素，在[0,i-1]范围找和为-num[i]的两个数字
-     * 不重复过滤，每次判断当前元素不等于上个元素即可，注意要从范围大的开始找，范围大的找完，
-     * 下一个如果和当前元素相等才可以跳过，如果从小的开始会有问题
+     * @Solution 排序，将第i个元素加入结果集，判断所有可以满足的可能，arr[i]==arr[i-1]跳过来去重
+     * 同时剩下两个元素也做去重处理
      * @Data 2022/1/18 21:46
      */
     public List<List<Integer>> threeSum(int[] nums) {
         List<List<Integer>> result = new ArrayList<>();
         if(nums == null || nums.length < 3) return result;
         Arrays.sort(nums);
-        for(int i = nums.length - 1; i >= 0; i--) {
-            if(nums[i] < 0 || (i < nums.length - 1 && nums[i] == nums[i + 1])) {
+        for(int i = 0; i < nums.length; i++) {
+            if(nums[i] > 0 || (i > 0 && nums[i] == nums[i - 1])) {
                 continue;
             }
-            int left = 0;
-            int right = i - 1;
+            int left = i + 1;
+            int right = nums.length - 1;
             while(left < right) {
-                if(nums[left] + nums[right] == -nums[i]) {
-                    List<Integer> list = new ArrayList<>(3);
-                    list.add(nums[left]);
-                    list.add(nums[right]);
-                    list.add(nums[i]);
-                    result.add(list);
-                    while(left + 1 < nums.length && nums[left + 1] == nums[left]) {
+                if(nums[i] + nums[left] + nums[right] == 0) {
+                    List<Integer> temp = new ArrayList<>();
+                    temp.add(nums[i]);
+                    temp.add(nums[left]);
+                    temp.add(nums[right]);
+                    result.add(temp);
+                    while(left < right && nums[left] == nums[left + 1]) {
                         left++;
                     }
-                    while(right - 1 > 0 && nums[right - 1] == nums[right]) {
+                    while(right > left && nums[right - 1] == nums[right]) {
                         right--;
                     }
                     left++;
                     right--;
-                } else if(nums[left] + nums[right] > -nums[i]) {
+                } else if(nums[i] + nums[left] + nums[right] > 0) {
                     right--;
                 } else {
                     left++;
@@ -171,6 +170,42 @@ public class Solution {
         }
         return result;
     }
+
+    Map<Character, String> map = new HashMap(){{
+        put('2', "abc");
+        put('3', "def");
+        put('4', "ghi");
+        put('5', "jkl");
+        put('6', "mno");
+        put('7', "pqrs");
+        put('8', "tuv");
+        put('9', "wxyz");
+
+    }};
+
+    /*
+     * @Author Lunus
+     * @Description 给定2-9的字符串，写出所有可能的字母排序
+     * @Link https://leetcode.cn/problems/letter-combinations-of-a-phone-number/
+     * @Solution 递归
+     * Date 2022-10-01
+     */
+    public List<String> letterCombinations(String digits) {
+        List<String> result = new ArrayList<>();
+        if(digits == null || digits.length() == 0) return result;
+        List<String> subResult = letterCombinations(digits.substring(1));
+        for(char ch : map.get(digits.charAt(0)).toCharArray()) {
+            if(subResult.size() == 0) {
+                result.add(ch + "");
+            }
+            for(String str : subResult) {
+                result.add(ch + str);
+            }
+        }
+        return result;
+    }
+
+
 
     /*
      * @Author lupeiyao
@@ -471,6 +506,34 @@ public class Solution {
             sb.append("/");
         }
         return sb.toString();
+    }
+
+
+    /*
+     * @Author Lunus
+     * @Description 给定一组括号数组，判断是否有效
+     * @Link https://leetcode.cn/problems/valid-parentheses/?favorite=2cktkvj
+     * @Solution 栈
+     * Date 2022-10-01
+     */
+    public boolean isValid(String s) {
+        LinkedList<Character> stack = new LinkedList<>();
+        for(int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            if(ch == '(' || ch == '[' || ch == '{') {
+                stack.push(ch);
+            } else if(stack.size() == 0){
+                return false;
+            } else {
+                char pop = stack.pop();
+                if((ch == ')' && pop == '(') || (ch == ']' && pop == '[') || (ch == '}' && pop == '{')) {
+                    continue;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return stack.isEmpty();
     }
 
 }

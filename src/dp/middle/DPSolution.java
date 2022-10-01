@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 public class DPSolution {
     public static void main(String[] args) {
         List<List<Integer>> list = new ArrayList<>();
-        System.out.println(new DPSolution().lengthOfLongestSubstring("pwwkew"));
+        System.out.println(new DPSolution().longestPalindrome1("babad"));
     }
 
     /*
@@ -215,57 +215,47 @@ public class DPSolution {
      * @Author lupeiyao
      * @Description 最长回文子串
      * @Link https://leetcode-cn.com/problems/longest-palindromic-substring/
-     * @Solution dp[i][j] = true表示str[i:j]为回文串，计算所有长度为2的串是否回文。
-     * 依次计算长度为3，4...的所有子串是否回文，dp[i][i+j] = dp[i+1][i+j-1] && str[i] == str[i+j]
+     * @Solution dp[i][j] = true表示str[i:j]为回文串,次计算长度为2,3，4...的所有子串是否回文
      * @Data 2022/1/6 16:22
      */
-    public String longestPalindrome(String s) {
-        char[] chars = s.toCharArray();
-        boolean[][] dp = new boolean[chars.length][chars.length];
-        for(int i = 0; i < dp.length; i++) dp[i][i] = true;
+    public String longestPalindrome1(String s) {
+        if(s == null || s.length() < 2) return s;
+        int[][] dp = new int[s.length()][s.length()];
         int start = 0;
-        int end = 1;
-        for(int i = 1; i < s.length(); i++) {
-            for(int j = 0; j < s.length() && j + i < s.length(); j++) {
-                if(chars[j] == chars[j + i]) {
-                    if(i <= 2) {
-                        dp[j][j + i] = true;
-                    } else {
-                        dp[j][j + i] = dp[j + 1][ j + i - 1];
-                    }
-                }
-                if(dp[j][j + i]) {
-                    start = j;
-                    end = j + i + 1;
+        int end = 0;
+        for(int length = 1; length <= s.length(); length++) {
+            for(int i = 0; i + length - 1 < s.length(); i++) {
+                if(length == 1) {
+                    dp[i][i + length - 1] = 1;
+                } else if(s.charAt(i) == s.charAt(i + length - 1) && (i + 1 > i + length - 1 - 1 || dp[i + 1][i + length - 1 - 1] == 1)) {
+                    dp[i][i + length - 1] = 1;
+                    start = i;
+                    end = i + length - 1;
                 }
             }
         }
-        return s.substring(start, end);
+        return s.substring(start, end + 1);
     }
 
     /*
      * @Author lupeiyao
      * @Description 最长的不包含重复字符的子串
      * @Link https://leetcode-cn.com/problems/longest-substring-without-repeating-characters/
-     * @Solution 双指针
+     * @Solution dp[i] = max(dp[i-1], lastIdx[str[i]])，dp[i]表示以str[i]为结尾的最长子串的
+     * 第一个字符的前一个位置，lastIdx[str[i]]表示当前字符的上一个位置
      * @Data 2022/1/14 15:20
      */
     public int lengthOfLongestSubstring(String s) {
+        if(s == null || s.length() == 0) return 0;
+        if(s.length() == 1) return 1;
         int result = 0;
-        // 上一个字符开始的最长串的结尾索引
-        int lastIndex = 0;
-        char[] chars = s.toCharArray();
-        HashSet<Character> set = new HashSet<>();
-        for(int i = 0; i < chars.length; i++) {
-            while(lastIndex != s.length() && !set.contains(chars[lastIndex])) {
-                set.add(chars[lastIndex]);
-                lastIndex += 1;
+        Map<Character, Integer> map = new HashMap<>();
+        for(int i = 0, j = -1; i < s.length(); i++) {
+            if(map.containsKey(s.charAt(i))) {
+                j = Math.max(j, map.get(s.charAt(i)));
             }
-            result = Math.max(result, lastIndex - i);
-            if(lastIndex == s.length()) {
-                break;
-            }
-            set.remove(chars[i]);
+            map.put(s.charAt(i), i);
+            result = Math.max(result, i - j);
         }
         return result;
     }
